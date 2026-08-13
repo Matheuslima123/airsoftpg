@@ -147,6 +147,7 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  margin-right: auto;
   text-decoration: none;
   color: var(--text);
 }
