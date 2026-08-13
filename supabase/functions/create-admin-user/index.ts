@@ -5,14 +5,24 @@ const supabase = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 );
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS'
+};
+
 function json(obj, status) {
   return new Response(JSON.stringify(obj), {
     status,
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 'Content-Type': 'application/json', ...corsHeaders }
   });
 }
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders });
+  }
+
   if (req.method !== 'POST') {
     return json({ error: 'Método não permitido' }, 405);
   }
