@@ -898,6 +898,10 @@ body {
   font-size: 0.98rem;
 }
 
+.rules-list p strong {
+  color: var(--text-light);
+}
+
 @media (max-width: 720px) {
   .rule-block {
     grid-template-columns: 1fr;
