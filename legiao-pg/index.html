@@ -55,7 +55,7 @@
         <div class="info-box">
           <h3>Próxima partida</h3>
           <ul class="info-list">
-            <li id="next-match">Aguardando partida agendada</li>
+            <li id="next-match">Carregando próxima partida…</li>
           </ul>
         </div>
         <div class="info-box">
@@ -107,5 +107,28 @@
   <footer class="site-footer">
     <p>Airsoft<span>PG</span> · airsoftpg.com.br</p>
   </footer>
+  <script src="../js/config.js"></script>
+  <script>
+    (function () {
+      var el = document.getElementById('next-match');
+      var today = new Date().toISOString().slice(0, 10);
+      fetch(SUPABASE_URL + '/rest/v1/jogos?select=titulo,data_jogo,hora,local_jogo&data_jogo=gte.' + today + '&order=data_jogo.asc,hora.asc&limit=1', {
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY }
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data && data[0]) {
+            var j = data[0];
+            var partes = j.data_jogo.split('-');
+            var txt = partes[2] + '/' + partes[1] + '/' + partes[0] + ' — ' + j.hora + ' · ' + j.titulo;
+            if (j.local_jogo) txt += ' · ' + j.local_jogo;
+            el.textContent = txt;
+          } else {
+            el.textContent = 'Aguardando partida agendada';
+          }
+        })
+        .catch(function () { el.textContent = 'Aguardando partida agendada'; });
+    })();
+  </script>
 </body>
 </html>

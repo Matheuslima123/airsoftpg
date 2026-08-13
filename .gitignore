@@ -1,10 +1,9 @@
-# Credenciais do banco - NUNCA commitar
-admin/.env
+# Credenciais - NUNCA commitar
 .env
 *.local
 
 # Dependências
-admin/node_modules/
+node_modules/
 
 # Logs
 *.log

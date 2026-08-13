@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — AirsoftPG</title>
+  <meta name="robots" content="noindex" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <script src="../js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .admin-card { background: rgba(26, 33, 24, 0.82); border: 1px solid var(--line); border-radius: 12px; padding: 22px; margin-bottom: 20px; }
+    .admin-form label { display: block; font-size: 0.85rem; color: var(--text-dim); margin: 12px 0 4px; }
+    .admin-form input, .admin-form textarea { width: 100%; padding: 10px 12px; background: #141a12; color: #e8e8e0; border: 1px solid #33402c; border-radius: 8px; font-size: 0.95rem; font-family: inherit; }
+    .admin-form input:focus, .admin-form textarea:focus { outline: 2px solid var(--accent); }
+    .admin-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .msg { display: none; padding: 10px 14px; border-radius: 8px; margin: 12px 0; font-size: 0.9rem; }
+    .msg.ok { display: block; background: #1e3520; color: #9fe3a5; }
+    .msg.err { display: block; background: #3a1d1d; color: #f0b0b0; }
+    .tbl { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .tbl th, .tbl td { text-align: left; padding: 9px 10px; border-bottom: 1px solid #2a3226; }
+    .tbl th { color: var(--text-dim); text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; }
+    .btn-danger { background: #5a2424; color: #f0d6d6; padding: 7px 12px; border: 0; border-radius: 8px; cursor: pointer; }
+    .empty { color: var(--text-dim); font-style: italic; }
+    .logout { background: none; border: 0; color: var(--text-dim); cursor: pointer; font-size: 0.85rem; text-decoration: underline; float: right; }
+    .hidden { display: none; }
+    @media (max-width: 600px) { .admin-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="field-photo-bg" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="../index.html">
+      <span class="brand-name">Airsoft <span>PG · Admin</span></span>
+    </a>
+    <button id="btn-logout" class="logout hidden">Sair</button>
+  </header>
+
+  <main class="page">
+    <div id="view-login" class="admin-card">
+      <h2>Entrar</h2>
+      <div class="msg" id="login-msg"></div>
+      <div class="admin-form">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" value="matheus@airsoftpg.com.br" autocomplete="username" />
+        <label for="password">Senha</label>
+        <input id="password" type="password" autocomplete="current-password" />
+        <div style="margin-top: 16px;">
+          <button class="btn-primary" id="btn-login" style="width:100%;">Entrar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-admin" class="hidden">
+      <div class="admin-card">
+        <h2>Agendar jogo</h2>
+        <div class="msg" id="form-msg"></div>
+        <div class="admin-form">
+          <label for="titulo">Título</label>
+          <input id="titulo" placeholder="Ex.: Operação Noturna / Partida aberta" />
+          <label for="descricao">Descrição</label>
+          <textarea id="descricao" rows="2" placeholder="Detalhes da partida (opcional)"></textarea>
+          <div class="admin-row">
+            <div>
+              <label for="data">Data</label>
+              <input id="data" type="date" />
+            </div>
+            <div>
+              <label for="hora">Horário</label>
+              <input id="hora" type="time" />
+            </div>
+          </div>
+          <label for="local">Local</label>
+          <input id="local" placeholder="Ex.: Campo Legião — Cará-Cará (opcional)" />
+          <div style="margin-top: 16px;">
+            <button class="btn-primary" id="btn-salvar" style="width:100%;">Agendar jogo</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h2>Jogos agendados</h2>
+        <div id="lista-jogos" class="empty">Carregando…</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const $ = (id) => document.getElementById(id);
+
+    function showMsg(el, text, ok) {
+      el.textContent = text;
+      el.className = 'msg ' + (ok ? 'ok' : 'err');
+      setTimeout(() => { el.className = 'msg'; }, 5000);
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function enterAdmin() {
+      $('view-login').classList.add('hidden');
+      $('view-admin').classList.remove('hidden');
+      $('btn-logout').classList.remove('hidden');
+      carregar();
+    }
+
+    $('btn-login').addEventListener('click', async () => {
+      const email = $('email').value.trim();
+      const password = $('password').value;
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) { showMsg($('login-msg'), error.message, false); return; }
+      enterAdmin();
+    });
+
+    $('password').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('btn-login').click(); });
+
+    $('btn-logout').addEventListener('click', async () => { await sb.auth.signOut(); location.reload(); });
+
+    async function carregar() {
+      const { data, error } = await sb.from('jogos').select('*').order('data_jogo', { ascending: false }).order('hora', { ascending: false });
+      const box = $('lista-jogos');
+      if (error) { box.className = 'empty'; box.textContent = error.message; return; }
+      if (!data.length) { box.className = 'empty'; box.textContent = 'Nenhum jogo agendado.'; return; }
+      box.className = '';
+      box.innerHTML = '<table class="tbl"><tr><th>Data</th><th>Hora</th><th>Jogo</th><th></th></tr>' + data.map((j) => `
+        <tr>
+          <td nowrap>${j.data_jogo}</td>
+          <td nowrap>${j.hora}</td>
+          <td>
+            <div style="color:#cfd9c7;font-weight:600">${escapeHtml(j.titulo)}</div>
+            ${j.descricao ? '<div style="color:#8a9383">' + escapeHtml(j.descricao) + '</div>' : ''}
+            ${j.local_jogo ? '<div style="color:#8a9383;font-size:0.8rem">📍 ' + escapeHtml(j.local_jogo) + '</div>' : ''}
+          </td>
+          <td><button class="btn-danger" data-id="${j.id}">Remover</button></td>
+        </tr>`).join('') + '</table>';
+      box.querySelectorAll('button[data-id]').forEach((b) => b.addEventListener('click', () => remover(b.dataset.id)));
+    }
+
+    async function remover(id) {
+      const { error } = await sb.from('jogos').delete().eq('id', id);
+      if (error) { $('lista-jogos').textContent = error.message; return; }
+      carregar();
+    }
+
+    $('btn-salvar').addEventListener('click', async () => {
+      const jogo = {
+        titulo: $('titulo').value.trim(),
+        descricao: $('descricao').value.trim() || null,
+        data_jogo: $('data').value,
+        hora: $('hora').value,
+        local_jogo: $('local').value.trim() || null
+      };
+      if (!jogo.titulo || !jogo.data_jogo || !jogo.hora) { showMsg($('form-msg'), 'Título, data e horário são obrigatórios.', false); return; }
+      const { error } = await sb.from('jogos').insert(jogo);
+      if (error) { showMsg($('form-msg'), error.message, false); return; }
+      showMsg($('form-msg'), 'Jogo agendado! A próxima partida já aparece no site.', true);
+      $('titulo').value = ''; $('descricao').value = ''; $('data').value = ''; $('hora').value = ''; $('local').value = '';
+      carregar();
+    });
+
+    (async () => {
+      const { data } = await sb.auth.getSession();
+      if (data.session) enterAdmin();
+    })();
+  </script>
+</body>
+</html>
