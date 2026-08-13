@@ -272,7 +272,7 @@
       msg += '📜 Regras: https://airsoftpg.com.br/legiao-pg/regras.html\n\n';
       msg += '✅ *Confirme abaixo com seu nome:*\n';
       for (let i = 1; i <= 10; i++) msg += i + ' - \n';
-      window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+      window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(msg), '_blank');
     });
 
     $('btn-salvar').addEventListener('click', async () => {
