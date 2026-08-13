@@ -850,14 +850,14 @@ body {
   filter: saturate(0.85);
 }
 
-.rules-list .rules-image {
+.rule-block .rules-image {
   overflow: visible;
   border: none;
   box-shadow: none;
   background: none;
 }
 
-.rules-list .rules-image img {
+.rule-block .rules-image img {
   height: auto;
   aspect-ratio: 1 / 1;
   object-fit: contain;
@@ -965,11 +965,11 @@ body {
     margin: 0 auto;
   }
 
-  .rules-list .rules-image {
+  .rule-block .rules-image {
     max-width: 220px;
   }
 
-  .rules-list .rules-image.double {
+  .rule-block .rules-image.double {
     max-width: 320px;
   }
 }
