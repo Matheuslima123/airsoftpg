@@ -973,6 +973,27 @@ body {
   height: 22px;
 }
 
+.btn-whatsapp-send {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #1faa53;
+  color: #ffffff;
+  font-weight: 700;
+  font-family: inherit;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-whatsapp-send:hover {
+  background: #28c265;
+}
+
 /* ---------- Footer ---------- */
 .site-footer {
   text-align: center;
