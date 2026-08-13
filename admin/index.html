@@ -146,6 +146,11 @@
           </div>
           <p style="color:var(--text-dim);font-size:0.85rem;margin-top:12px;">O novo usuário entra no painel com o e-mail e senha definidos aqui.</p>
         </div>
+
+        <div class="admin-card">
+          <h2>Usuários cadastrados</h2>
+          <div id="lista-usuarios" class="empty">Carregando…</div>
+        </div>
       </div>
     </div>
   </main>
@@ -177,6 +182,7 @@
       });
       if (name === 'view-jogos') carregar();
       if (name === 'view-faq') carregarFaq();
+      if (name === 'view-usuarios') carregarUsuarios();
     }
 
     document.querySelectorAll('.menu-item[data-view]').forEach((b) => {
@@ -248,6 +254,54 @@
       carregarFaq();
     }
 
+    async function callFunction(body) {
+      const { data: sessionData } = await sb.auth.getSession();
+      const token = sessionData.session ? sessionData.session.access_token : '';
+      const res = await fetch(SUPABASE_FUNCTIONS_URL + '/create-admin-user', {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+      return { status: res.status, body: await res.json() };
+    }
+
+    async function carregarUsuarios() {
+      const box = $('lista-usuarios');
+      try {
+        const { status, body } = await callFunction({ action: 'list' });
+        if (status !== 200) { box.className = 'empty'; box.textContent = body.error || 'Erro ao carregar usuários.'; return; }
+        if (!body.users.length) { box.className = 'empty'; box.textContent = 'Nenhum usuário cadastrado.'; return; }
+        box.className = '';
+        box.innerHTML = '<table class="tbl"><tr><th>Nome</th><th>E-mail</th><th>Cadastro</th><th></th></tr>' + body.users.map((u) => `
+          <tr>
+            <td>${escapeHtml(u.nome || '—')}</td>
+            <td>${escapeHtml(u.email)}</td>
+            <td nowrap>${u.criado ? u.criado.slice(0, 10).split('-').reverse().join('/') : ''}</td>
+            <td><button class="btn-danger" data-id="${u.id}" data-email="${escapeHtml(u.email)}">Alterar senha</button></td>
+          </tr>`).join('') + '</table>';
+        box.querySelectorAll('button[data-id]').forEach((b) => b.addEventListener('click', () => resetSenha(b.dataset.id, b.dataset.email)));
+      } catch (err) {
+        box.className = 'empty'; box.textContent = 'Erro de conexão: ' + err.message;
+      }
+    }
+
+    async function resetSenha(id, email) {
+      const nova = prompt('Nova senha para ' + email + ' (mínimo 6 caracteres):');
+      if (nova === null) return;
+      if (nova.length < 6) { alert('A senha deve ter pelo menos 6 caracteres.'); return; }
+      try {
+        const { status, body } = await callFunction({ action: 'reset-password', id, password: nova });
+        if (status !== 200) { alert(body.error || 'Erro ao alterar a senha.'); return; }
+        alert('Senha alterada com sucesso para ' + email + '.');
+      } catch (err) {
+        alert('Erro de conexão: ' + err.message);
+      }
+    }
+
     $('btn-whatsapp').addEventListener('click', async () => {
       const today = new Date().toISOString().slice(0, 10);
       const { data, error } = await sb.from('jogos')
@@ -297,22 +351,12 @@
       const senha = $('user-senha').value;
       if (!nome || !email || !senha) { showMsg($('user-msg'), 'Preencha nome, e-mail e senha.', false); return; }
       if (senha.length < 6) { showMsg($('user-msg'), 'A senha deve ter pelo menos 6 caracteres.', false); return; }
-      const { data: sessionData } = await sb.auth.getSession();
-      const token = sessionData.session ? sessionData.session.access_token : '';
       try {
-        const res = await fetch(SUPABASE_FUNCTIONS_URL + '/create-admin-user', {
-          method: 'POST',
-          headers: {
-            apikey: SUPABASE_ANON_KEY,
-            Authorization: 'Bearer ' + token,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ nome, email, password: senha })
-        });
-        const body = await res.json();
-        if (!res.ok) { showMsg($('user-msg'), body.error || 'Erro ao criar usuário.', false); return; }
+        const { status, body } = await callFunction({ action: 'create', nome, email, password: senha });
+        if (status !== 201) { showMsg($('user-msg'), body.error || 'Erro ao criar usuário.', false); return; }
         showMsg($('user-msg'), 'Usuário criado e já pode entrar no painel.', true);
         $('user-nome').value = ''; $('user-email').value = ''; $('user-senha').value = '';
+        carregarUsuarios();
       } catch (err) {
         showMsg($('user-msg'), 'Erro de conexão: ' + err.message, false);
       }
