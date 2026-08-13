@@ -966,11 +966,11 @@ body {
   }
 
   .rule-block .rules-image {
-    max-width: 220px;
+    max-width: 160px;
   }
 
   .rule-block .rules-image.double {
-    max-width: 320px;
+    max-width: 220px;
   }
 }
 
