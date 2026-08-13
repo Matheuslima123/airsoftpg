@@ -24,3 +24,26 @@ create policy "jogos_insert_auth" on public.jogos
 drop policy if exists "jogos_delete_auth" on public.jogos;
 create policy "jogos_delete_auth" on public.jogos
   for delete to authenticated using (true);
+
+-- FAQ / Sugestoes (publico envia; admin le e remove)
+create table if not exists public.faq (
+  id bigint generated always as identity primary key,
+  tipo text not null default 'Sugestao',
+  nome text,
+  mensagem text not null,
+  criado_em timestamptz default now()
+);
+
+alter table public.faq enable row level security;
+
+drop policy if exists "faq_insert_public" on public.faq;
+create policy "faq_insert_public" on public.faq
+  for insert to anon, authenticated with check (true);
+
+drop policy if exists "faq_select_auth" on public.faq;
+create policy "faq_select_auth" on public.faq
+  for select to authenticated using (true);
+
+drop policy if exists "faq_delete_auth" on public.faq;
+create policy "faq_delete_auth" on public.faq
+  for delete to authenticated using (true);

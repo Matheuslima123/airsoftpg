@@ -212,10 +212,13 @@ body {
   padding: 10px 16px;
   border: 1px solid var(--line);
   border-radius: 999px;
+  background: rgba(20, 26, 18, 0.6);
   color: var(--text-dim);
   text-decoration: none;
+  font-family: inherit;
   font-size: 0.95rem;
   font-weight: 600;
+  cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
 }
 
@@ -227,6 +230,156 @@ body {
 .btn-admin svg {
   width: 16px;
   height: 16px;
+}
+
+.hidden {
+  display: none;
+}
+
+.msg {
+  display: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin: 12px 0;
+  font-size: 0.9rem;
+}
+
+.msg.ok {
+  display: block;
+  background: #1e3520;
+  color: #9fe3a5;
+}
+
+.msg.err {
+  display: block;
+  background: #3a1d1d;
+  color: #f0b0b0;
+}
+
+/* ---------- FAQ / Sugestoes modal ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 100;
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 500px;
+  background: #141a12;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: 0;
+  color: var(--text-dim);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  color: var(--accent);
+}
+
+.modal-sub {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin: 4px 0 14px;
+}
+
+.faq-form label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin: 12px 0 4px;
+}
+
+.faq-form input,
+.faq-form select,
+.faq-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: #0e130c;
+  color: #e8e8e0;
+  border: 1px solid #33402c;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.faq-form input:focus,
+.faq-form select:focus,
+.faq-form textarea:focus {
+  outline: 2px solid var(--accent);
+}
+
+/* ---------- Admin menu ---------- */
+.admin-menu {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.menu-item:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--accent);
+}
+
+.menu-item:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.menu-item small {
+  color: var(--text-dim);
+}
+
+.menu-icon {
+  font-size: 1.4rem;
+}
+
+.back-link {
+  display: inline-block;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+
+.back-link:hover {
+  color: var(--accent);
 }
 
 /* ---------- Hero ---------- */

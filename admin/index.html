@@ -53,35 +53,89 @@
     </div>
 
     <div id="view-admin" class="hidden">
-      <div class="admin-card">
-        <h2>Agendar jogo</h2>
-        <div class="msg" id="form-msg"></div>
-        <div class="admin-form">
-          <label for="titulo">Título</label>
-          <input id="titulo" placeholder="Ex.: Operação Noturna / Partida aberta" />
-          <label for="descricao">Descrição</label>
-          <textarea id="descricao" rows="2" placeholder="Detalhes da partida (opcional)"></textarea>
-          <div class="admin-row">
-            <div>
-              <label for="data">Data</label>
-              <input id="data" type="date" />
-            </div>
-            <div>
-              <label for="hora">Horário</label>
-              <input id="hora" type="time" />
-            </div>
-          </div>
-          <label for="local">Local</label>
-          <input id="local" placeholder="Ex.: Campo Legião — Cará-Cará (opcional)" />
-          <div style="margin-top: 16px;">
-            <button class="btn-primary" id="btn-salvar" style="width:100%;">Agendar jogo</button>
-          </div>
+      <div id="admin-home" class="admin-card">
+        <h2>Painel de controle</h2>
+        <p style="color:var(--text-dim);">Escolha uma opção:</p>
+        <div class="admin-menu">
+          <button class="menu-item" data-view="jogos">
+            <span class="menu-icon">📅</span>
+            <span><strong>Agendar jogos</strong><br /><small>Cadastrar e gerenciar partidas</small></span>
+          </button>
+          <button class="menu-item" data-view="faq">
+            <span class="menu-icon">💬</span>
+            <span><strong>FAQ / Sugestões</strong><br /><small>Ver dúvidas e sugestões recebidas</small></span>
+          </button>
+          <button class="menu-item" data-view="usuarios">
+            <span class="menu-icon">👤</span>
+            <span><strong>Usuários</strong><br /><small>Adicionar novos administradores</small></span>
+          </button>
+          <button class="menu-item" disabled>
+            <span class="menu-icon">🛠️</span>
+            <span><strong>Em breve</strong><br /><small>Mais opções em desenvolvimento</small></span>
+          </button>
         </div>
       </div>
 
-      <div class="admin-card">
-        <h2>Jogos agendados</h2>
-        <div id="lista-jogos" class="empty">Carregando…</div>
+      <div id="view-jogos" class="hidden">
+        <a class="back-link" href="#" data-goto="home">← Voltar</a>
+        <div class="admin-card">
+          <h2>Agendar jogo</h2>
+          <div class="msg" id="form-msg"></div>
+          <div class="admin-form">
+            <label for="titulo">Título</label>
+            <input id="titulo" placeholder="Ex.: Operação Noturna / Partida aberta" />
+            <label for="descricao">Descrição</label>
+            <textarea id="descricao" rows="2" placeholder="Detalhes da partida (opcional)"></textarea>
+            <div class="admin-row">
+              <div>
+                <label for="data">Data</label>
+                <input id="data" type="date" />
+              </div>
+              <div>
+                <label for="hora">Horário</label>
+                <input id="hora" type="time" />
+              </div>
+            </div>
+            <label for="local">Local</label>
+            <input id="local" placeholder="Ex.: Campo Legião — Cará-Cará (opcional)" />
+            <div style="margin-top: 16px;">
+              <button class="btn-primary" id="btn-salvar" style="width:100%;">Agendar jogo</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <h2>Jogos agendados</h2>
+          <div id="lista-jogos" class="empty">Carregando…</div>
+        </div>
+      </div>
+
+      <div id="view-faq" class="hidden">
+        <a class="back-link" href="#" data-goto="home">← Voltar</a>
+        <div class="admin-card">
+          <h2>FAQ / Sugestões</h2>
+          <div id="lista-faq" class="empty">Carregando…</div>
+        </div>
+      </div>
+
+      <div id="view-usuarios" class="hidden">
+        <a class="back-link" href="#" data-goto="home">← Voltar</a>
+        <div class="admin-card">
+          <h2>Adicionar administrador</h2>
+          <div class="msg" id="user-msg"></div>
+          <div class="admin-form">
+            <label for="user-nome">Nome</label>
+            <input id="user-nome" placeholder="Ex.: João Silva" />
+            <label for="user-email">E-mail</label>
+            <input id="user-email" type="email" placeholder="Ex.: joao@airsoftpg.com.br" />
+            <label for="user-senha">Senha</label>
+            <input id="user-senha" type="password" placeholder="Mínimo 6 caracteres" />
+            <div style="margin-top: 16px;">
+              <button class="btn-primary" id="btn-add-user" style="width:100%;">Adicionar usuário</button>
+            </div>
+          </div>
+          <p style="color:var(--text-dim);font-size:0.85rem;margin-top:12px;">O novo usuário entra no painel com o e-mail e senha definidos aqui.</p>
+        </div>
       </div>
     </div>
   </main>
@@ -104,8 +158,24 @@
       $('view-login').classList.add('hidden');
       $('view-admin').classList.remove('hidden');
       $('btn-logout').classList.remove('hidden');
-      carregar();
+      showView('admin-home');
     }
+
+    function showView(name) {
+      ['admin-home', 'view-jogos', 'view-faq', 'view-usuarios'].forEach((id) => {
+        $(id).classList.toggle('hidden', id !== name);
+      });
+      if (name === 'view-jogos') carregar();
+      if (name === 'view-faq') carregarFaq();
+    }
+
+    document.querySelectorAll('.menu-item[data-view]').forEach((b) => {
+      b.addEventListener('click', () => showView('view-' + b.dataset.view));
+    });
+
+    document.querySelectorAll('[data-goto="home"]').forEach((a) => {
+      a.addEventListener('click', (e) => { e.preventDefault(); showView('admin-home'); });
+    });
 
     $('btn-login').addEventListener('click', async () => {
       const email = $('email').value.trim();
@@ -145,6 +215,29 @@
       carregar();
     }
 
+    async function carregarFaq() {
+      const { data, error } = await sb.from('faq').select('*').order('criado_em', { ascending: false });
+      const box = $('lista-faq');
+      if (error) { box.className = 'empty'; box.textContent = error.message; return; }
+      if (!data.length) { box.className = 'empty'; box.textContent = 'Nenhuma dúvida ou sugestão recebida.'; return; }
+      box.className = '';
+      box.innerHTML = '<table class="tbl"><tr><th>Data</th><th>Tipo</th><th>Autor</th><th>Mensagem</th><th></th></tr>' + data.map((f) => `
+        <tr>
+          <td nowrap>${f.criado_em ? f.criado_em.slice(0, 10).split('-').reverse().join('/') : ''}</td>
+          <td nowrap>${f.tipo === 'Sugestao' ? 'Sugestão' : 'Dúvida'}</td>
+          <td nowrap>${f.nome ? escapeHtml(f.nome) : '—'}</td>
+          <td>${escapeHtml(f.mensagem)}</td>
+          <td><button class="btn-danger" data-id="${f.id}">Remover</button></td>
+        </tr>`).join('') + '</table>';
+      box.querySelectorAll('button[data-id]').forEach((b) => b.addEventListener('click', () => removerFaq(b.dataset.id)));
+    }
+
+    async function removerFaq(id) {
+      const { error } = await sb.from('faq').delete().eq('id', id);
+      if (error) { $('lista-faq').textContent = error.message; return; }
+      carregarFaq();
+    }
+
     $('btn-salvar').addEventListener('click', async () => {
       const jogo = {
         titulo: $('titulo').value.trim(),
@@ -159,6 +252,26 @@
       showMsg($('form-msg'), 'Jogo agendado! A próxima partida já aparece no site.', true);
       $('titulo').value = ''; $('descricao').value = ''; $('data').value = ''; $('hora').value = ''; $('local').value = '';
       carregar();
+    });
+
+    $('btn-add-user').addEventListener('click', async () => {
+      const nome = $('user-nome').value.trim();
+      const email = $('user-email').value.trim();
+      const senha = $('user-senha').value;
+      if (!nome || !email || !senha) { showMsg($('user-msg'), 'Preencha nome, e-mail e senha.', false); return; }
+      if (senha.length < 6) { showMsg($('user-msg'), 'A senha deve ter pelo menos 6 caracteres.', false); return; }
+      const { data, error } = await sb.auth.signUp({
+        email,
+        password: senha,
+        options: { data: { nome } }
+      });
+      if (error) { showMsg($('user-msg'), error.message, false); return; }
+      if (data.session) {
+        showMsg($('user-msg'), 'Usuário criado com acesso ao painel.', true);
+      } else {
+        showMsg($('user-msg'), 'Usuário criado. Ele precisa confirmar o e-mail antes de entrar.', true);
+      }
+      $('user-nome').value = ''; $('user-email').value = ''; $('user-senha').value = '';
     });
 
     (async () => {
