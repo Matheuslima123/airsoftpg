@@ -943,30 +943,34 @@ body {
   color: #33ccff;
 }
 
-.btn-whatsapp {
+.whatsapp-float {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 90;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 28px;
-  border-radius: 10px;
+  padding: 14px 22px;
+  border-radius: 999px;
   background: #1faa53;
   color: #ffffff;
   font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  letter-spacing: 0.5px;
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  box-shadow: 0 8px 24px rgba(31, 170, 83, 0.35);
   transition: background 0.2s, transform 0.2s;
 }
 
-.btn-whatsapp:hover {
+.whatsapp-float:hover {
   background: #28c265;
   transform: translateY(-2px);
 }
 
-.btn-whatsapp svg {
-  width: 20px;
-  height: 20px;
+.whatsapp-float svg {
+  width: 22px;
+  height: 22px;
 }
 
 /* ---------- Footer ---------- */
@@ -1004,11 +1008,6 @@ body {
   .site-header {
     flex-wrap: wrap;
     padding: 14px 16px;
-  }
-
-  .btn-whatsapp {
-    padding: 10px 14px;
-    font-size: 0.78rem;
   }
 
   .btn-back {

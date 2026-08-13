@@ -21,9 +21,13 @@
     <a class="btn-back" href="../index.html#campos" aria-label="Página inicial">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>
     </a>
-    <a class="btn-whatsapp" href="https://chat.whatsapp.com/Hbo7OERgT2qKJOe0xPGxMh" target="_blank" rel="noopener">
-      <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 4c-6.6 0-12 5.4-12 12 0 2.1.6 4.2 1.6 6L4 28l6.2-1.6c1.7.9 3.7 1.5 5.8 1.5 6.6 0 12-5.4 12-12S22.6 4 16 4zm0 22c-1.8 0-3.5-.5-5-1.3l-.4-.2-3.7 1 1-3.6-.2-.4C7.3 20.4 6.8 18.3 6.8 16 6.8 10.9 11 6.8 16 6.8s9.2 4.1 9.2 9.2-4.1 9.2-9.2 9.2zm5-6.9c-.3-.1-1.7-.8-1.9-.9-.3-.1-.5-.1-.7.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.8-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.1c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.1s.9 2.4 1.1 2.6c.1.2 1.8 2.8 4.4 3.9.6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.1-.6-.2z"/></svg>
-      Grupo WhatsApp
+    <button class="btn-admin" id="faq-open" aria-label="FAQ e Sugestões">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></svg>
+      FAQ / Sugestões
+    </button>
+    <a class="btn-admin" href="../admin/" aria-label="Acesso admin">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Admin
     </a>
   </header>
 
@@ -119,5 +123,84 @@
   <footer class="site-footer">
     <p>Airsoft<span>PG</span> · airsoftpg.com.br</p>
   </footer>
+
+  <a class="whatsapp-float" href="https://chat.whatsapp.com/Hbo7OERgT2qKJOe0xPGxMh" target="_blank" rel="noopener" aria-label="Grupo WhatsApp">
+    <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16 4c-6.6 0-12 5.4-12 12 0 2.1.6 4.2 1.6 6L4 28l6.2-1.6c1.7.9 3.7 1.5 5.8 1.5 6.6 0 12-5.4 12-12S22.6 4 16 4zm0 22c-1.8 0-3.5-.5-5-1.3l-.4-.2-3.7 1 1-3.6-.2-.4C7.3 20.4 6.8 18.3 6.8 16 6.8 10.9 11 6.8 16 6.8s9.2 4.1 9.2 9.2-4.1 9.2-9.2 9.2zm5-6.9c-.3-.1-1.7-.8-1.9-.9-.3-.1-.5-.1-.7.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.8-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.1c-.2-.5-.4-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.1s.9 2.4 1.1 2.6c.1.2 1.8 2.8 4.4 3.9.6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.1-.6-.2z"/></svg>
+    Grupo WhatsApp
+  </a>
+
+  <div id="modal-faq" class="modal-overlay hidden">
+    <div class="modal-box">
+      <button class="modal-close" id="faq-close" aria-label="Fechar">✕</button>
+      <h2>FAQ / Sugestões</h2>
+      <p class="modal-sub">Envie sua dúvida ou sugestão. Ela fica salva e a equipe do campo responde o quanto antes.</p>
+      <div class="msg" id="faq-msg"></div>
+      <div class="faq-form">
+        <label for="faq-nome">Seu nome</label>
+        <input id="faq-nome" placeholder="Opcional" />
+        <label for="faq-tipo">Tipo</label>
+        <select id="faq-tipo">
+          <option value="Duvida">Dúvida</option>
+          <option value="Sugestao">Sugestão</option>
+        </select>
+        <label for="faq-mensagem">Mensagem</label>
+        <textarea id="faq-mensagem" rows="4" placeholder="Escreva aqui sua dúvida ou sugestão…"></textarea>
+        <div style="margin-top: 16px;">
+          <button class="btn-primary" id="btn-faq-enviar" style="width:100%;">Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script>
+    (function () {
+      var overlay = document.getElementById('modal-faq');
+      document.getElementById('faq-open').addEventListener('click', function () {
+        overlay.classList.remove('hidden');
+      });
+      document.getElementById('faq-close').addEventListener('click', function () {
+        overlay.classList.add('hidden');
+      });
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) overlay.classList.add('hidden');
+      });
+      document.getElementById('btn-faq-enviar').addEventListener('click', function () {
+        var box = document.getElementById('faq-msg');
+        var text = document.getElementById('faq-mensagem');
+        if (!text.value.trim()) {
+          box.className = 'msg err';
+          box.textContent = 'Escreva sua dúvida ou sugestão antes de enviar.';
+          return;
+        }
+        fetch(SUPABASE_URL + '/rest/v1/faq', {
+          method: 'POST',
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: 'Bearer ' + SUPABASE_ANON_KEY,
+            'Content-Type': 'application/json',
+            Prefer: 'return=minimal'
+          },
+          body: JSON.stringify({
+            nome: document.getElementById('faq-nome').value.trim() || null,
+            tipo: document.getElementById('faq-tipo').value,
+            mensagem: text.value.trim()
+          })
+        })
+        .then(function (r) {
+          if (!r.ok) throw new Error('Erro ao enviar (' + r.status + ')');
+          box.className = 'msg ok';
+          box.textContent = 'Recebido! Obrigado pela sua participação.';
+          document.getElementById('faq-nome').value = '';
+          text.value = '';
+          setTimeout(function () { box.className = 'msg'; }, 6000);
+        })
+        .catch(function (err) {
+          box.className = 'msg err';
+          box.textContent = err.message;
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
