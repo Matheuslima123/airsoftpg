@@ -205,6 +205,30 @@ body {
   border-color: var(--accent);
 }
 
+.btn-admin {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-admin:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}
+
+.btn-admin svg {
+  width: 16px;
+  height: 16px;
+}
+
 /* ---------- Hero ---------- */
 .hero {
   max-width: 720px;
@@ -831,6 +855,11 @@ body {
   }
 
   .btn-back {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  .btn-admin {
     padding: 8px 12px;
     font-size: 0.85rem;
   }
