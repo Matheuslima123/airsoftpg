@@ -850,6 +850,16 @@ body {
   filter: saturate(0.85);
 }
 
+.rules-image.double {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.rules-image.double img {
+  height: 220px;
+}
+
 .rules-list {
   list-style: none;
   display: flex;
