@@ -297,18 +297,25 @@
       const senha = $('user-senha').value;
       if (!nome || !email || !senha) { showMsg($('user-msg'), 'Preencha nome, e-mail e senha.', false); return; }
       if (senha.length < 6) { showMsg($('user-msg'), 'A senha deve ter pelo menos 6 caracteres.', false); return; }
-      const { data, error } = await sb.auth.signUp({
-        email,
-        password: senha,
-        options: { data: { nome } }
-      });
-      if (error) { showMsg($('user-msg'), error.message, false); return; }
-      if (data.session) {
-        showMsg($('user-msg'), 'Usuário criado com acesso ao painel.', true);
-      } else {
-        showMsg($('user-msg'), 'Usuário criado. Ele precisa confirmar o e-mail antes de entrar.', true);
+      const { data: sessionData } = await sb.auth.getSession();
+      const token = sessionData.session ? sessionData.session.access_token : '';
+      try {
+        const res = await fetch(SUPABASE_FUNCTIONS_URL + '/create-admin-user', {
+          method: 'POST',
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nome, email, password: senha })
+        });
+        const body = await res.json();
+        if (!res.ok) { showMsg($('user-msg'), body.error || 'Erro ao criar usuário.', false); return; }
+        showMsg($('user-msg'), 'Usuário criado e já pode entrar no painel.', true);
+        $('user-nome').value = ''; $('user-email').value = ''; $('user-senha').value = '';
+      } catch (err) {
+        showMsg($('user-msg'), 'Erro de conexão: ' + err.message, false);
       }
-      $('user-nome').value = ''; $('user-email').value = ''; $('user-senha').value = '';
     });
 
     (async () => {
