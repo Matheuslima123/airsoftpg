@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — AirsoftPG</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Segoe UI", Arial, sans-serif; background: #161b14; color: #e8e8e0; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 28px 18px; }
+    h1 { font-size: 22px; text-transform: uppercase; letter-spacing: 2px; color: #7dae4b; margin-bottom: 4px; }
+    .sub { color: #8a9383; font-size: 13px; margin-bottom: 26px; }
+    .card { background: #1f261c; border: 1px solid #2f3a2a; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+    h2 { font-size: 16px; text-transform: uppercase; letter-spacing: 1px; color: #cfd9c7; margin: 0 0 16px; }
+    label { display: block; font-size: 13px; color: #aab2a3; margin: 10px 0 4px; }
+    input, textarea, select { width: 100%; padding: 10px 12px; background: #141a12; color: #e8e8e0;
+      border: 1px solid #33402c; border-radius: 8px; font-size: 14px; font-family: inherit; }
+    input:focus, textarea:focus { outline: 2px solid #7dae4b; }
+    textarea { resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    button { padding: 11px 20px; border: 0; border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 600; }
+    .btn-primary { background: #7dae4b; color: #13170f; }
+    .btn-primary:hover { background: #8fc45a; }
+    .btn-ghost { background: #2a3326; color: #cfd9c7; }
+    .btn-ghost:hover { background: #36422f; }
+    .btn-danger { background: #5a2424; color: #f0d6d6; }
+    .btn-danger:hover { background: #753030; }
+    .btn-block { width: 100%; }
+    .msg { padding: 10px 14px; border-radius: 8px; margin: 10px 0; font-size: 13px; display: none; }
+    .msg.ok { background: #1e3520; color: #9fe3a5; display: block; }
+    .msg.err { background: #3a1d1d; color: #f0b0b0; display: block; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid #2a3226; vertical-align: top; }
+    th { color: #8a9383; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
+    .jogo-titulo { color: #cfd9c7; font-weight: 600; }
+    .tag { display: inline-block; background: #2a3326; color: #aab2a3; border-radius: 5px; padding: 2px 8px; font-size: 12px; margin: 2px 4px 0 0; }
+    .empty { color: #8a9383; font-style: italic; }
+    .logout { background: none; border: 0; color: #8a9383; cursor: pointer; font-size: 13px; text-decoration: underline; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; }
+    .hidden { display: none; }
+    @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header-row">
+      <div>
+        <h1>AirsoftPG · Admin</h1>
+        <div class="sub">Agendamento de jogos do campo Legião Airsoft Pg</div>
+      </div>
+      <button id="btn-logout" class="logout hidden">Sair</button>
+    </div>
+
+    <div id="view-login" class="card">
+      <h2>Entrar</h2>
+      <div class="msg" id="login-msg"></div>
+      <label for="username">Usuário</label>
+      <input id="username" autocomplete="username" />
+      <label for="password">Senha</label>
+      <input id="password" type="password" autocomplete="current-password" />
+      <div style="margin-top: 16px;"><button id="btn-login" class="btn-primary btn-block">Entrar</button></div>
+    </div>
+
+    <div id="view-admin" class="hidden">
+      <div class="card">
+        <h2>Agendar jogo</h2>
+        <div class="msg" id="form-msg"></div>
+        <label for="titulo">Título</label>
+        <input id="titulo" placeholder="Ex.: Operação Noturna / Partida aberta" />
+        <label for="descricao">Descrição</label>
+        <textarea id="descricao" rows="2" placeholder="Detalhes da partida (opcional)"></textarea>
+        <div class="row">
+          <div>
+            <label for="data">Data</label>
+            <input id="data" type="date" />
+          </div>
+          <div>
+            <label for="hora">Horário</label>
+            <input id="hora" type="time" />
+          </div>
+        </div>
+        <label for="local">Local</label>
+        <input id="local" placeholder="Ex.: Campo Legião — Cará-Cará (opcional)" />
+        <div style="margin-top: 16px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="btn-salvar" class="btn-primary">Agendar jogo</button>
+          <button id="btn-publicar" class="btn-ghost">Publicar no site</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Jogos agendados</h2>
+        <div id="lista-jogos" class="empty">Carregando…</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let token = localStorage.getItem('apg_token') || '';
+
+    function api(url, opts = {}) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers.Authorization = token;
+      return fetch(url, { ...opts, headers }).then(async (r) => {
+        const body = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(body.error || 'Erro');
+        return body;
+      });
+    }
+
+    function show(msgEl, text, ok) {
+      msgEl.textContent = text;
+      msgEl.className = 'msg ' + (ok ? 'ok' : 'err');
+      setTimeout(() => { msgEl.className = 'msg'; }, 5000);
+    }
+
+    $('btn-login').addEventListener('click', async () => {
+      const u = $('username').value.trim();
+      const p = $('password').value;
+      try {
+        const r = await api('/api/login', { method: 'POST', body: JSON.stringify({ username: u, password: p }) });
+        token = r.token;
+        localStorage.setItem('apg_token', token);
+        enterAdmin(r.username);
+      } catch (e) { show($('login-msg'), e.message, false); }
+    });
+
+    $('password').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('btn-login').click(); });
+
+    $('btn-logout').addEventListener('click', () => { token = ''; localStorage.removeItem('apg_token'); location.reload(); });
+
+    function enterAdmin(user) {
+      $('view-login').classList.add('hidden');
+      $('view-admin').classList.remove('hidden');
+      $('btn-logout').classList.remove('hidden');
+      carregar();
+    }
+
+    async function carregar() {
+      try {
+        const jogos = await api('/api/jogos');
+        const box = $('lista-jogos');
+        if (!jogos.length) { box.className = 'empty'; box.textContent = 'Nenhum jogo agendado.'; return; }
+        box.className = '';
+        box.innerHTML = '<table><tr><th>Data</th><th>Hora</th><th>Jogo</th><th></th></tr>' + jogos.map((j) => `
+          <tr>
+            <td nowrap>${j.data_jogo}</td>
+            <td nowrap>${j.hora}</td>
+            <td>
+              <div class="jogo-titulo">${escapeHtml(j.titulo)}</div>
+              ${j.descricao ? '<div style="color:#8a9383">' + escapeHtml(j.descricao) + '</div>' : ''}
+              ${j.local_jogo ? '<span class="tag">' + escapeHtml(j.local_jogo) + '</span>' : ''}
+            </td>
+            <td><button class="btn-danger" data-id="${j.id}">Remover</button></td>
+          </tr>`).join('') + '</table>';
+        box.querySelectorAll('button[data-id]').forEach((b) => b.addEventListener('click', () => remover(b.dataset.id)));
+      } catch (e) { $('lista-jogos').textContent = e.message; }
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    $('btn-salvar').addEventListener('click', async () => {
+      const body = {
+        titulo: $('titulo').value.trim(),
+        descricao: $('descricao').value.trim(),
+        data: $('data').value,
+        hora: $('hora').value,
+        local: $('local').value.trim()
+      };
+      try {
+        await api('/api/jogos', { method: 'POST', body: JSON.stringify(body) });
+        show($('form-msg'), 'Jogo agendado com sucesso!', true);
+        $('titulo').value = ''; $('descricao').value = ''; $('data').value = ''; $('hora').value = ''; $('local').value = '';
+        carregar();
+      } catch (e) { show($('form-msg'), e.message, false); }
+    });
+
+    $('btn-publicar').addEventListener('click', async () => {
+      try {
+        const r = await api('/api/publicar', { method: 'POST' });
+        show($('form-msg'), r.publicado ? 'Publicado: ' + r.publicado : 'Nenhuma partida futura para publicar.', r.publicado !== null);
+      } catch (e) { show($('form-msg'), e.message, false); }
+    });
+
+    async function remover(id) {
+      try { await api('/api/jogos/' + id, { method: 'DELETE' }); carregar(); }
+      catch (e) { $('lista-jogos').textContent = e.message; }
+    }
+
+    if (token) {
+      api('/api/jogos').then(() => enterAdmin()).catch(() => { localStorage.removeItem('apg_token'); });
+    }
+  </script>
+</body>
+</html>
