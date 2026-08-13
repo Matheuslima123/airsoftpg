@@ -260,15 +260,15 @@
       const fmt = (d) => d.split('-').reverse().join('/');
       let msg = '📢 *PRÓXIMAS PARTIDAS — AIRSOFTPG* 🌐\n';
       msg += '📍 *Legião Airsoft Pg*\n';
-      msg += '🗺️ Rua José Koteski, 24 — Cará-Cará, Ponta Grossa — PR\n\n';
+      msg += 'Rua José Koteski, 24 — Cará-Cará, Ponta Grossa — PR\n\n';
       data.forEach((j, i) => {
-        msg += '🎯 *' + (i + 1) + '.* 📅 ' + fmt(j.data_jogo) + ' às ' + j.hora + '\n';
-        msg += '▶️ ' + j.titulo + '\n';
+        msg += '🎯 *' + (i + 1) + '.* 📅 ' + fmt(j.data_jogo) + ' 🕐 ' + j.hora + '\n';
+        msg += '🔸 ' + j.titulo + '\n';
         if (j.descricao) msg += '📝 ' + j.descricao + '\n';
         if (j.local_jogo) msg += '📍 ' + j.local_jogo + '\n';
         msg += '\n';
       });
-      msg += '⚠️ *ATENÇÃO: leia as regras antes de jogar!*\n';
+      msg += '🚨 *ATENÇÃO: leia as regras antes de jogar!*\n';
       msg += '📜 Regras: https://airsoftpg.com.br/legiao-pg/regras.html\n\n';
       msg += '✅ *Confirme abaixo com seu nome:*\n';
       for (let i = 1; i <= 10; i++) msg += i + ' - \n';
