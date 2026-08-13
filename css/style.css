@@ -902,6 +902,37 @@ body {
   color: var(--text-light);
 }
 
+.rules-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: rgba(122, 26, 26, 0.28);
+  border: 1px solid #d64545;
+  border-left: 4px solid #d64545;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  backdrop-filter: blur(8px);
+}
+
+.rules-alert .rule-icon {
+  background: rgba(214, 69, 69, 0.16);
+  border-color: #d64545;
+  color: #ffb3b3;
+}
+
+.rules-alert strong {
+  display: block;
+  color: #ffd7d7;
+  font-size: 1.02rem;
+  margin-bottom: 2px;
+}
+
+.rules-alert p {
+  color: var(--text-dim);
+  font-size: 0.98rem;
+}
+
 @media (max-width: 720px) {
   .rule-block {
     grid-template-columns: 1fr;
